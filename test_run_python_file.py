@@ -1,0 +1,13 @@
+from functions import run_python_file
+print(run_python_file("calculator","main.py"))
+print('-'*50)
+print(run_python_file("calculator","main.py",["3+5"]))
+print('-'*50)
+print(run_python_file("calculator","tests.py"))
+print('-'*50)
+print(run_python_file("calculator","../main.py"))
+print('-'*50)
+print(run_python_file("calculator","nonexistent.py"))
+print('-'*50)
+print(run_python_file("calculator","lorem.txt"))
+print('-'*50)
