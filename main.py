@@ -21,7 +21,14 @@ def main():
     messages = [types.Content(role="user",parts=[types.Part(text=args.user_prompt)])]
     if args.verbose:
         print(f"User prompt: {args.user_prompt}")
-    generate_content (client,messages,args.verbose)
+    for _ in range(20):
+         done = generate_content (client,messages,args.verbose)
+         if done:
+             return
+    print("Error: Maximum iterations reached without a final response")
+    exit(1)
+
+
 
 def generate_content(client,messages,verbose):
     function_result = list()
@@ -34,6 +41,10 @@ def generate_content(client,messages,verbose):
         )
     if not response.usage_metadata:
         raise RuntimeError("Metadata Empty!!!! Please check API Key")
+    if response.candidates:
+        for candidate in response.candidates:
+            messages.append(candidate.content)
+
     if verbose:
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
@@ -50,8 +61,11 @@ def generate_content(client,messages,verbose):
             function_result.append(function_call_result.parts[0])
             if verbose:
                 print(f"-> {function_call_result.parts[0].function_response.response}")
+        messages.append(types.Content(role="user", parts=function_result))
+        return False
     else:
         print(response.text)
+        return True
 
 if __name__ == "__main__":
     main()
